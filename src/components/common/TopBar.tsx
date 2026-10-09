@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { ActiveTab } from '../../types/finance';
 import { Plus, Menu, X, RotateCcw } from 'lucide-react';
+import meridianEmblem from '../../assets/images/meridian_vault_emblem_1791570759637.jpg';
 
 interface TopBarProps {
   onOpenAddTransaction: () => void;
@@ -30,7 +31,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenAddTransaction }) => {
           className="flex items-center gap-2.5 text-left text-base font-semibold tracking-tight text-white whitespace-nowrap shrink-0 hover:opacity-90 transition-opacity"
         >
           <img
-            src="/src/assets/images/meridian_vault_emblem_1791570759637.jpg"
+            src={meridianEmblem}
             alt="Emblem"
             className="h-7 w-7 rounded-full object-cover border border-white/20"
           />

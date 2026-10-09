@@ -1,4 +1,6 @@
 import { ReceiptExtraction } from '../types/finance';
+import receiptElectronics from '../assets/images/receipt_sample_electronics_1791570772997.jpg';
+import receiptDining from '../assets/images/receipt_sample_dining_1791570784641.jpg';
 
 export interface SampleReceipt {
   id: string;
@@ -15,7 +17,7 @@ export const SAMPLE_RECEIPTS: SampleReceipt[] = [
     title: 'Retail Technology Invoice',
     merchant: 'Apex Electronics',
     subtitle: 'Bengaluru Tech Plaza · Bill #AE-98745',
-    imagePath: '/src/assets/images/receipt_sample_electronics_1791570772997.jpg',
+    imagePath: receiptElectronics,
     mockData: {
       merchant: 'Apex Electronics',
       date: '2026-10-06',
@@ -47,7 +49,7 @@ export const SAMPLE_RECEIPTS: SampleReceipt[] = [
     title: 'Artisan Cafe Dining Bill',
     merchant: 'The Daily Grind Cafe',
     subtitle: '145 Oak Street · Table 14',
-    imagePath: '/src/assets/images/receipt_sample_dining_1791570784641.jpg',
+    imagePath: receiptDining,
     mockData: {
       merchant: 'The Daily Grind Cafe',
       date: '2026-10-08',
