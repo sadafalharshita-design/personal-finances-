@@ -6,6 +6,7 @@ import {
   FinancialGoal,
   SimulationResult,
   ActiveTab,
+  UserProfile,
 } from '../types/finance';
 import {
   INITIAL_ACCOUNTS,
@@ -55,7 +56,21 @@ interface FinanceContextType {
   executeSimulation: (query: string, safetyBuffer: number) => SimulationResult;
   setCurrentSimulation: (sim: SimulationResult | null) => void;
   resetAllData: () => void;
+
+  // Authentication
+  currentUser: UserProfile | null;
+  isAuthenticated: boolean;
+  login: (email: string, name?: string) => void;
+  logout: () => void;
 }
+
+export const DEMO_USER: UserProfile = {
+  id: 'usr-rahul',
+  name: 'Rahul Sharma',
+  email: 'rahul@wealth.demo',
+  tier: 'Private Wealth Member',
+  avatar_initials: 'RS',
+};
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
@@ -65,9 +80,19 @@ const STORAGE_KEYS = {
   BUDGETS: 'meridian_budgets_v1',
   GOALS: 'meridian_goals_v1',
   HISTORY: 'meridian_history_v1',
+  USER: 'meridian_user_v1',
 };
 
 export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.USER);
+      return saved ? JSON.parse(saved) : DEMO_USER;
+    } catch {
+      return DEMO_USER;
+    }
+  });
+
   const [accounts, setAccounts] = useState<Account[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.ACCOUNTS);
@@ -380,6 +405,45 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.removeItem(STORAGE_KEYS.BUDGETS);
     localStorage.removeItem(STORAGE_KEYS.GOALS);
     localStorage.removeItem(STORAGE_KEYS.HISTORY);
+    localStorage.removeItem(STORAGE_KEYS.USER);
+    setCurrentUser(DEMO_USER);
+  };
+
+  const login = (email: string, name?: string) => {
+    const trimmedEmail = email.trim().toLowerCase();
+    const isRahul = trimmedEmail === 'rahul@wealth.demo' || trimmedEmail.startsWith('rahul');
+    const displayName = name?.trim() || (isRahul ? 'Rahul Sharma' : email.split('@')[0]);
+
+    const initials = displayName
+      .split(' ')
+      .map((part) => part[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+
+    const user: UserProfile = {
+      id: `usr-${Date.now()}`,
+      name: displayName,
+      email: email.trim(),
+      tier: 'Private Wealth Member',
+      avatar_initials: initials || 'MW',
+    };
+
+    setCurrentUser(user);
+    try {
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const logout = () => {
+    setCurrentUser(null);
+    try {
+      localStorage.removeItem(STORAGE_KEYS.USER);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -419,6 +483,10 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         executeSimulation,
         setCurrentSimulation,
         resetAllData,
+        currentUser,
+        isAuthenticated: !!currentUser,
+        login,
+        logout,
       }}
     >
       {children}

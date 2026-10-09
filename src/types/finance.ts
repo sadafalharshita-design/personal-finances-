@@ -94,3 +94,11 @@ export interface ReceiptExtraction {
 }
 
 export type ActiveTab = 'overview' | 'what-if' | 'accounts' | 'transactions' | 'budget' | 'goals' | 'scan';
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  tier: string;
+  avatar_initials: string;
+}

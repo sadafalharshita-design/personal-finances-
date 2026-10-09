@@ -1,16 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { ActiveTab } from '../../types/finance';
-import { Plus, Menu, X, RotateCcw } from 'lucide-react';
+import { Plus, Menu, X, RotateCcw, LogIn, LogOut, User, ChevronDown } from 'lucide-react';
 import meridianEmblem from '../../assets/images/meridian_vault_emblem_1791570759637.jpg';
 
 interface TopBarProps {
   onOpenAddTransaction: () => void;
+  onOpenAuthModal: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onOpenAddTransaction }) => {
-  const { activeTab, setActiveTab, resetAllData } = useFinance();
+export const TopBar: React.FC<TopBarProps> = ({ onOpenAddTransaction, onOpenAuthModal }) => {
+  const { activeTab, setActiveTab, resetAllData, currentUser, isAuthenticated, logout } = useFinance();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const navLinks: { id: ActiveTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
@@ -61,7 +74,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenAddTransaction }) => {
           })}
         </nav>
 
-        {/* Zone 3: 1 primary action */}
+        {/* Zone 3: Actions + User Profile / Sign In */}
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => {
@@ -84,6 +97,67 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenAddTransaction }) => {
             <span>Add Transaction</span>
           </button>
 
+          {/* User Profile or Sign In Button */}
+          {isAuthenticated && currentUser ? (
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                className="flex items-center gap-2 p-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] transition-colors"
+              >
+                <div className="h-6 w-6 rounded-md bg-[#c99e52]/20 border border-[#c99e52]/30 flex items-center justify-center text-[11px] font-bold text-[#dfb66d]">
+                  {currentUser.avatar_initials}
+                </div>
+                <span className="hidden xl:inline text-xs font-medium text-slate-200">
+                  {currentUser.name}
+                </span>
+                <ChevronDown className="h-3 w-3 text-slate-400" />
+              </button>
+
+              {userDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-64 rounded-xl border border-white/[0.12] bg-[#121620] p-3 shadow-2xl z-50">
+                  <div className="pb-3 border-b border-white/[0.08]">
+                    <p className="text-xs font-semibold text-white truncate">{currentUser.name}</p>
+                    <p className="text-[11px] text-slate-400 truncate">{currentUser.email}</p>
+                    <span className="mt-1.5 inline-block text-[10px] text-[#dfb66d] font-mono">
+                      {currentUser.tier}
+                    </span>
+                  </div>
+
+                  <div className="pt-2 space-y-1">
+                    <button
+                      onClick={() => {
+                        setUserDropdownOpen(false);
+                        onOpenAuthModal();
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 text-xs text-slate-300 hover:text-white hover:bg-white/[0.05] rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <User className="h-3.5 w-3.5 text-slate-400" />
+                      <span>Switch Account</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setUserDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <LogOut className="h-3.5 w-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={onOpenAuthModal}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-200 hover:text-white hover:bg-white/[0.08] transition-colors whitespace-nowrap shrink-0"
+            >
+              <LogIn className="h-3.5 w-3.5 text-[#dfb66d]" />
+              <span>Sign In</span>
+            </button>
+          )}
+
           {/* Mobile hamburger toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -98,6 +172,38 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenAddTransaction }) => {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-white/[0.08] bg-[#0e121b] px-4 py-3 space-y-1">
+          {isAuthenticated && currentUser && (
+            <div className="pb-2 mb-2 border-b border-white/[0.08] flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold text-white">{currentUser.name}</p>
+                <p className="text-[11px] text-slate-400">{currentUser.email}</p>
+              </div>
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}
+                className="text-xs text-rose-400 hover:underline"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
+
+          {!isAuthenticated && (
+            <div className="pb-2 mb-2 border-b border-white/[0.08]">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAuthModal();
+                }}
+                className="w-full py-2 text-center rounded-lg bg-[#c99e52]/20 border border-[#c99e52]/40 text-xs font-bold text-[#dfb66d]"
+              >
+                Sign In to Meridian
+              </button>
+            </div>
+          )}
+
           {navLinks.map((item) => (
             <button
               key={item.id}
