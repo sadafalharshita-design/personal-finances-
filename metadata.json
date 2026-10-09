@@ -1,0 +1,8 @@
+{
+  "name": "Meridian Wealth — Financial Decision Intelligence",
+  "description": "Bespoke personal finance decision-support and deterministic What-If scenario simulation platform with multi-account ledgers, intelligent budgeting, goal acceleration, and receipt analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

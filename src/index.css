@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-canvas: #0b0e14;
+    --bg-surface: #121620;
+    --bg-surface-elevated: #181e2b;
+    --border-hairline: rgba(255, 255, 255, 0.08);
+    --border-subtle: rgba(255, 255, 255, 0.12);
+    --text-primary: #f3f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-gold: #c99e52;
+    --accent-gold-hover: #dfb66d;
+    --accent-gold-subtle: rgba(201, 158, 82, 0.12);
+    --accent-emerald: #10b981;
+    --accent-rose: #f43f5e;
+  }
+
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  .font-mono, .tabular-nums, input[type="number"] {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Hairline dividers and surface classes */
+.surface-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+}
+
+.surface-card-hover {
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+.surface-card-hover:hover {
+  border-color: var(--border-subtle);
+  background-color: var(--bg-surface-elevated);
+}
